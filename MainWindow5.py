@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'D:\Study\Year2\TDLT\C7\DOANCUOIKI\MainWindow3.ui'
+# Form implementation generated from reading ui file 'D:\Study\Year2\TDLT\C7\DOANCUOIKI\MainWindow5.ui'
 #
 # Created by: PyQt6 UI code generator 6.7.1
 #
@@ -9,49 +9,41 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow3(object):
+class Ui_MainWindow5(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1007, 741)
+        MainWindow.resize(1005, 834)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(0, 0, 1151, 811))
+        self.label.setGeometry(QtCore.QRect(0, -30, 1101, 841))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("D:\\Study\\Year2\\TDLT\\C7\\DOANCUOIKI\\../../../../main3.png"))
+        self.label.setPixmap(QtGui.QPixmap("D:\\Study\\Year2\\TDLT\\C7\\DOANCUOIKI\\../../../../main5.png"))
         self.label.setObjectName("label")
         self.tableWidget = QtWidgets.QTableWidget(parent=self.centralwidget)
-        self.tableWidget.setGeometry(QtCore.QRect(460, 220, 401, 271))
-        self.tableWidget.setMinimumSize(QtCore.QSize(401, 0))
-        self.tableWidget.setMaximumSize(QtCore.QSize(401, 271))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.tableWidget.setFont(font)
-        self.tableWidget.setStyleSheet("")
+        self.tableWidget.setGeometry(QtCore.QRect(170, 200, 691, 391))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.pushButton = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(180, 610, 191, 61))
+        self.pushButton.setGeometry(QtCore.QRect(290, 670, 211, 61))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton.setFont(font)
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(parent=self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(450, 610, 191, 61))
+        self.pushButton_2.setGeometry(QtCore.QRect(570, 670, 211, 61))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(15)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
         self.pushButton_2.setObjectName("pushButton_2")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1007, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1005, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)

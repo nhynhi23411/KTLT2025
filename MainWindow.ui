@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1130</width>
-    <height>740</height>
+    <width>1024</width>
+    <height>797</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,8 @@
    <widget class="QLineEdit" name="lineEditSDT">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>340</y>
+      <x>380</x>
+      <y>390</y>
       <width>351</width>
       <height>51</height>
      </rect>
@@ -30,20 +30,22 @@
      <font>
       <pointsize>12</pointsize>
      </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>IBeamCursor</cursorShape>
     </property>
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">
-background-color: rgb(85, 255, 127);</string>
+     <string notr="true"/>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEditPW">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>410</y>
+      <x>380</x>
+      <y>470</y>
       <width>351</width>
       <height>51</height>
      </rect>
@@ -54,16 +56,16 @@ background-color: rgb(85, 255, 127);</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(85, 255, 127);</string>
+     <string notr="true"/>
     </property>
    </widget>
    <widget class="QPushButton" name="pushLogin">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>490</y>
-      <width>161</width>
-      <height>41</height>
+      <x>470</x>
+      <y>540</y>
+      <width>171</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
@@ -80,88 +82,33 @@ background-color: rgb(85, 255, 127);</string>
      <string>ĐĂNG NHẬP</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>40</y>
-      <width>251</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Nirmala Text</family>
-      <pointsize>20</pointsize>
-      <weight>75</weight>
-      <italic>false</italic>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;ẨM THỰC VIỆT&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>470</y>
-      <width>541</width>
-      <height>16</height>
+      <x>10</x>
+      <y>10</y>
+      <width>1181</width>
+      <height>741</height>
      </rect>
     </property>
     <property name="text">
-     <string>Nếu quý khách quên mật khẩu vui lòng gọi điện cho số điện thoại 091234567 để được hỗ trợ</string>
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../../../main1.png</pixmap>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>250</x>
-      <y>350</y>
-      <width>141</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Số điện thoại</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>410</y>
-      <width>141</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Mật khẩu</string>
-    </property>
-   </widget>
+   <zorder>label_5</zorder>
+   <zorder>lineEditSDT</zorder>
+   <zorder>lineEditPW</zorder>
+   <zorder>pushLogin</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1130</width>
+     <width>1024</width>
      <height>26</height>
     </rect>
    </property>
