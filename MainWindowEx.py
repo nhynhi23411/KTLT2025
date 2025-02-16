@@ -3,15 +3,20 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from MainWindow import Ui_MainWindow
 from MainWindow2 import Ui_MainWindow2
 from MainWindow3 import Ui_MainWindow3
-from MainWindow5 import Ui_MainWindow5
+from MainWindow7 import Ui_MainWindow7
 from MainWindow4 import Ui_MainWindow4
 from MainWindow6 import Ui_MainWindow6
+from MainWindow8 import Ui_MainWindow8
+from MainWindow9 import Ui_MainWindow9
+from MainWindow10 import Ui_MainWindow10
 from handler1 import AccountHandler
 from PyQt6.QtWidgets import QTableWidgetItem
 from menu import menu_items
 from donhang import save_order
-from MainWindowEx5 import MainWindowEx5  # Import MainWindowEx5
+from MainWindowEx5 import MainWindowEx5
+# Import MainWindowEx5
 import json
+from account import accounts
 
 
 class MainWindowEx1(QMainWindow, Ui_MainWindow):
@@ -35,11 +40,8 @@ class MainWindowEx1(QMainWindow, Ui_MainWindow):
     def open_next_window(self, window_name, user):
         if window_name == "mainwindow2":
             self.main_window = MainWindowEx2(user)
-        elif window_name == "mainwindow8":
-            pass
-            #self.main_window = QMainWindow()
-            #self.ui_main_window = Ui_MainWindow8()
-            #self.ui_main_window.setupUi(self.main_window)
+        elif window_name == "mainwindow7":
+            self.main_window = MainWindowEx7(user)
         else:
             return
 
@@ -95,7 +97,7 @@ class MainWindowEx4(QMainWindow, Ui_MainWindow4):
         self.pushDat.clicked.connect(self.place_order)
         self.pushDat_2.clicked.connect(self.open_mainwindow5)
         self.pushButton_2.clicked.connect(self.go_to_mainwindow2)
-        self.pushButton_3.clicked.connect(self.logout)
+        self.pushButton_2.clicked.connect(self.logout)
 
     def go_to_mainwindow2(self):
         self.main_window2 = MainWindowEx2(self.user)
@@ -244,13 +246,15 @@ class MainWindowEx6(QMainWindow, Ui_MainWindow6):
             filtered_bookings = []
 
         self.tableWidget.setRowCount(len(filtered_bookings))
-        self.tableWidget.setColumnCount(3)
-        self.tableWidget.setHorizontalHeaderLabels(["Ngày", "Số khách", "Trang trí"])
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setHorizontalHeaderLabels(["Ngày", "Số khách", "Trang trí", "Số bàn"])
 
         for row, booking in enumerate(filtered_bookings):
+            table_number = booking.get("table_number", "Pending")  # Nếu chưa có số bàn, hiển thị Pending
             self.tableWidget.setItem(row, 0, QTableWidgetItem(booking["date"]))
-            self.tableWidget.setItem(row, 1, QTableWidgetItem(booking["guest_count"]))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(str(booking["guest_count"])))
             self.tableWidget.setItem(row, 2, QTableWidgetItem(booking["decoration"]))
+            self.tableWidget.setItem(row, 3, QTableWidgetItem(str(table_number)))
 
     def go_to_mainwindow2(self):
         self.main_window2 = MainWindowEx2(self.user)
@@ -262,7 +266,362 @@ class MainWindowEx6(QMainWindow, Ui_MainWindow6):
         self.main_window1 = MainWindowEx1()
         self.main_window1.show()
         self.close()
+class MainWindowEx7(QMainWindow, Ui_MainWindow7):
+    def __init__(self, user):
+        super().__init__()
+        self.setupUi(self)  # Đảm bảo giao diện được thiết lập
+        self.user = user  # Lưu thông tin người dùng
 
+        # Gán sự kiện cho các nút
+        #self.pushButtonKH.clicked.connect(self.go_to_mainwindow8)  # Chuyển đến giao diện đặt bàn
+        self.pushButtonDB.clicked.connect(self.go_to_mainwindow8)  # Chuyển đến giao diện khách hàng
+        self.pushButton_4.clicked.connect(self.logout)  # Đăng xuất
+        self.pushButtonDH.clicked.connect(self.go_to_mainwindow9)
+        self.pushButtonKH.clicked.connect(self.go_to_mainwindow10)
+
+
+    def go_to_mainwindow8(self):
+        self.main_window8 = MainWindowEx8(self.user)
+        self.main_window8.show()
+        self.close()
+
+    def go_to_mainwindow9(self):
+        self.main_window9 = MainWindowEx9(self.user)
+        self.main_window9.show()
+        self.close()
+
+    def go_to_mainwindow10(self):
+        self.main_window10 = MainWindowEx10(self.user)
+        self.main_window10.show()
+        self.close()
+
+    def logout(self):
+        QMessageBox.information(self, "Đăng xuất", "Bạn đã đăng xuất thành công.")
+        self.main_window1 = MainWindowEx1()
+        self.main_window1.show()
+        self.close()
+
+
+class MainWindowEx8(QMainWindow, Ui_MainWindow8):
+    def __init__(self, user):
+        super().__init__()
+        self.setupUi(self)
+        self.user = user  # Lưu thông tin người dùng đang đăng nhập
+
+        # Kết nối nút với chức năng
+        self.pushButtonDX.clicked.connect(self.logout)  # Đăng xuất
+        self.pushButtonTC.clicked.connect(self.go_to_mainwindow7)  # Quay về quản lý
+        self.pushButtonXN1.clicked.connect(self.confirm_reservation)  # Xác nhận đặt bàn
+        self.pushButtonXN2.clicked.connect(self.confirm_guest_arrival)  # Xác nhận khách đến
+
+        self.load_reservations()  # Tải dữ liệu lên bảng
+
+    def load_reservations(self):
+        """Tải danh sách đặt bàn từ datban.json và hiển thị trên tableWidget."""
+        try:
+            with open("datban.json", "r", encoding="utf-8") as file:
+                reservations = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            reservations = []
+
+        self.tableWidget.setRowCount(len(reservations))
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["ID", "Ngày", "Số khách", "Số bàn", "Trạng thái"])
+
+        for row, res in enumerate(reservations):
+            self.tableWidget.setItem(row, 0, QTableWidgetItem(res["reservation_id"]))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(res["date"]))
+            self.tableWidget.setItem(row, 2, QTableWidgetItem(str(res["guest_count"])))
+            self.tableWidget.setItem(row, 3, QTableWidgetItem(str(res.get("table_number", "Pending"))))
+            self.tableWidget.setItem(row, 4, QTableWidgetItem(res.get("status", "Pending")))
+
+    def confirm_reservation(self):
+        """Admin xác nhận đặt bàn, cập nhật số bàn vào datban.json."""
+        res_id = self.lineEditID1.text().strip()
+        table_number = self.lineEditSoban.text().strip()
+
+        if not res_id or not table_number:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID đặt bàn và số bàn.")
+            return
+
+        try:
+            with open("datban.json", "r", encoding="utf-8") as file:
+                reservations = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            reservations = []
+
+        for res in reservations:
+            if res["reservation_id"] == res_id:
+                res["table_number"] = table_number
+                res["status"] = "Confirmed"
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy ID đặt bàn!")
+            return
+
+        with open("datban.json", "w", encoding="utf-8") as file:
+            json.dump(reservations, file, indent=4, ensure_ascii=False)
+
+        QMessageBox.information(self, "Thành công", "Đã xác nhận đặt bàn thành công!")
+        self.load_reservations()  # Cập nhật giao diện
+
+    def confirm_guest_arrival(self):
+        """Admin xác nhận khách đã đến, cập nhật trạng thái thành 'Arrived'."""
+        res_id = self.lineEditID2.text().strip()
+
+        if not res_id:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID đặt bàn.")
+            return
+
+        try:
+            with open("datban.json", "r", encoding="utf-8") as file:
+                reservations = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            reservations = []
+
+        for res in reservations:
+            if res["reservation_id"] == res_id:
+                res["status"] = "Arrived"
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy ID đặt bàn!")
+            return
+
+        with open("datban.json", "w", encoding="utf-8") as file:
+            json.dump(reservations, file, indent=4, ensure_ascii=False)
+
+        QMessageBox.information(self, "Thành công", "Đã xác nhận khách đến!")
+        self.load_reservations()  # Cập nhật giao diện
+
+    def go_to_mainwindow7(self):
+        """Quay về giao diện quản lý."""
+        self.main_window7 = MainWindowEx7(self.user)
+        self.main_window7.show()
+        self.close()
+
+    def logout(self):
+        """Đăng xuất về màn hình chính."""
+        QMessageBox.information(self, "Đăng xuất", "Bạn đã đăng xuất thành công.")
+        self.main_window1 = MainWindowEx1()
+        self.main_window1.show()
+        self.close()
+
+class MainWindowEx9(QMainWindow, Ui_MainWindow9):
+    def __init__(self, user):
+        super().__init__()
+        self.setupUi(self)
+        self.user = user  # Lưu thông tin người dùng đang đăng nhập
+
+        # Kết nối nút với chức năng
+        self.pushButtonDX.clicked.connect(self.logout)  # Đăng xuất
+        self.pushButtonTC.clicked.connect(self.go_to_mainwindow7)  # Quay về quản lý
+        self.pushButtonXN1.clicked.connect(self.cancel_order)  # Hủy đơn hàng
+        self.pushButtonXN2.clicked.connect(self.confirm_delivery)  # Xác nhận giao hàng
+
+        self.load_orders()  # Tải dữ liệu lên bảng
+
+    def load_orders(self):
+        """Tải danh sách đơn hàng từ donhang.json và hiển thị trên tableWidget."""
+        try:
+            with open("donhang.json", "r", encoding="utf-8") as file:
+                orders = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            orders = []
+
+        self.tableWidget.setRowCount(len(orders))
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["ID", "Số điện thoại", "Tổng tiền", "Trạng thái", "Món ăn"])
+
+        for row, order in enumerate(orders):
+            self.tableWidget.setItem(row, 0, QTableWidgetItem(order["order_id"]))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(order["phone"]))
+            self.tableWidget.setItem(row, 2, QTableWidgetItem(str(order["total_price"])))
+            self.tableWidget.setItem(row, 3, QTableWidgetItem(order.get("status", "Pending")))
+            self.tableWidget.setItem(row, 4, QTableWidgetItem(
+                ", ".join([f"{item['name']} (x{item['quantity']})" for item in order.get("items", [])])
+            ))
+
+    def cancel_order(self):
+        """Admin hủy đơn hàng, cập nhật trạng thái thành 'Cancelled' và lưu lý do vào donhang.json."""
+        order_id = self.lineEditID1.text().strip()
+        reason = self.lineEditSoban.text().strip()
+
+        if not order_id or not reason:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID đơn hàng và lý do hủy.")
+            return
+
+        try:
+            with open("donhang.json", "r", encoding="utf-8") as file:
+                orders = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            orders = []
+
+        for order in orders:
+            if order["order_id"] == order_id:
+                order["status"] = "Cancelled"
+                order["cancel_reason"] = reason
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy ID đơn hàng!")
+            return
+
+        with open("donhang.json", "w", encoding="utf-8") as file:
+            json.dump(orders, file, indent=4, ensure_ascii=False)
+
+        QMessageBox.information(self, "Thành công", "Đã hủy đơn hàng thành công!")
+        self.load_orders()  # Cập nhật giao diện
+
+    def confirm_delivery(self):
+        """Admin xác nhận giao hàng, cập nhật trạng thái thành 'Delivered' trong donhang.json."""
+        order_id = self.lineEditID2.text().strip()
+
+        if not order_id:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID đơn hàng.")
+            return
+
+        try:
+            with open("donhang.json", "r", encoding="utf-8") as file:
+                orders = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            orders = []
+
+        for order in orders:
+            if order["order_id"] == order_id:
+                order["status"] = "Delivered"
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy ID đơn hàng!")
+            return
+
+        with open("donhang.json", "w", encoding="utf-8") as file:
+            json.dump(orders, file, indent=4, ensure_ascii=False)
+
+        QMessageBox.information(self, "Thành công", "Đã xác nhận giao hàng thành công!")
+        self.load_orders()  # Cập nhật giao diện
+
+    def go_to_mainwindow7(self):
+        """Quay về giao diện quản lý."""
+        self.main_window7 = MainWindowEx7(self.user)
+        self.main_window7.show()
+        self.close()
+
+    def logout(self):
+        """Đăng xuất về màn hình chính."""
+        QMessageBox.information(self, "Đăng xuất", "Bạn đã đăng xuất thành công.")
+        self.main_window1 = MainWindowEx1()
+        self.main_window1.show()
+        self.close()
+class MainWindowEx10(QMainWindow, Ui_MainWindow10):
+    def __init__(self, user):
+        super().__init__()
+        self.setupUi(self)  # Thiết lập giao diện
+        self.user = user  # Lưu thông tin người dùng
+
+        # Kết nối các nút với chức năng
+        self.pushButtonThem.clicked.connect(self.add_money)  # Nút thêm tiền
+        self.pushButton_2.clicked.connect(self.delete_account)  # Nút xóa tài khoản
+
+        self.load_customers()  # Gọi hàm tải danh sách khách hàng
+
+    def load_customers(self):
+        """Load danh sách khách hàng từ `account.json` vào `tableWidget`."""
+        try:
+            with open("account.json", "r", encoding="utf-8") as file:
+                accounts = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            accounts = {}
+
+        # Lọc danh sách khách hàng
+        customers = [
+            acc for acc in accounts.values()
+            if acc.get("role") == "customer" and "customer_id" in acc  # Tránh KeyError
+        ]
+
+        # Định số lượng hàng và cột trong tableWidget
+        self.tableWidget.setRowCount(len(customers))
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setHorizontalHeaderLabels(["ID KH", "Họ và tên", "SĐT", "Email", "Số tiền"])
+
+        for row, customer in enumerate(customers):
+            full_name = f"{customer.get('first_name', 'N/A')} {customer.get('last_name', 'N/A')}".strip()
+            customer_id = customer.get("customer_id", "N/A")  # Nếu thiếu, đặt "N/A"
+            phone = customer.get("phone", "N/A")
+            email = customer.get("email", "N/A")
+            money = str(customer.get("money", 0.0))  # Nếu thiếu, mặc định là 0.0
+
+            self.tableWidget.setItem(row, 0, QTableWidgetItem(customer_id))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(full_name))
+            self.tableWidget.setItem(row, 2, QTableWidgetItem(phone))
+            self.tableWidget.setItem(row, 3, QTableWidgetItem(email))
+            self.tableWidget.setItem(row, 4, QTableWidgetItem(money))
+
+    def add_money(self):
+        """Thêm tiền vào tài khoản khách hàng và lưu vào `account.json`."""
+        customer_id = self.lineEditID.text().strip()
+        amount = self.lineEditST.text().strip()
+
+        if not customer_id or not amount.isdigit():
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID khách hàng và số tiền hợp lệ!")
+            return
+
+        amount = float(amount)
+
+        # Đọc file account.json
+        try:
+            with open("account.json", "r", encoding="utf-8") as file:
+                accounts = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            accounts = {}
+
+        # Tìm khách hàng theo ID và cập nhật số tiền
+        for acc in accounts.values():
+            if acc.get("customer_id") == customer_id:
+                acc["money"] = acc.get("money", 0.0) + amount
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy khách hàng!")
+            return
+
+        # Lưu lại dữ liệu vào file account.json
+        self.save_accounts(accounts)
+
+        QMessageBox.information(self, "Thành công", f"Đã thêm {amount} VND vào tài khoản {customer_id}!")
+        self.load_customers()  # Cập nhật lại danh sách khách hàng
+
+    def delete_account(self):
+        """Xóa tài khoản khách hàng và cập nhật `account.json`."""
+        customer_id = self.lineEditID2.text().strip()
+
+        if not customer_id:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID khách hàng cần xóa!")
+            return
+
+        # Đọc file account.json
+        try:
+            with open("account.json", "r", encoding="utf-8") as file:
+                accounts = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            accounts = {}
+
+        # Xóa khách hàng khỏi danh sách
+        for user_id in list(accounts.keys()):
+            if accounts[user_id].get("customer_id") == customer_id:
+                del accounts[user_id]
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy khách hàng!")
+            return
+
+        # Lưu lại dữ liệu vào file account.json
+        self.save_accounts(accounts)
+
+        QMessageBox.information(self, "Thành công", f"Đã xóa tài khoản khách hàng {customer_id}!")
+        self.load_customers()  # Cập nhật lại danh sách khách hàng
+
+    def save_accounts(self, accounts):
+        """Lưu danh sách tài khoản vào file `account.json`."""
+        with open("account.json", "w", encoding="utf-8") as file:
+            json.dump(accounts, file, indent=4, ensure_ascii=False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

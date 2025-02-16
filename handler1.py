@@ -21,6 +21,6 @@ class AccountHandler:
                 if isinstance(user, Customer):
                     return True, user, "mainwindow2"
                 elif isinstance(user, Admin):
-                    return True, user, "mainwindow8"
+                    return True, user, "mainwindow7"
         return False, None, None
 
