@@ -16,6 +16,8 @@ from donhang import save_order
 from MainWindowEx5 import MainWindowEx5
 # Import MainWindowEx5
 import json
+import os
+from datetime import datetime
 from account import accounts
 
 
@@ -97,7 +99,7 @@ class MainWindowEx4(QMainWindow, Ui_MainWindow4):
         self.pushDat.clicked.connect(self.place_order)
         self.pushDat_2.clicked.connect(self.open_mainwindow5)
         self.pushButton_2.clicked.connect(self.go_to_mainwindow2)
-        self.pushButton_2.clicked.connect(self.logout)
+        self.pushButton_3.clicked.connect(self.logout)
 
     def go_to_mainwindow2(self):
         self.main_window2 = MainWindowEx2(self.user)
@@ -199,7 +201,9 @@ class MainWindowEx3(QMainWindow, Ui_MainWindow3):
         for row, (label, value) in enumerate(user_data):
             self.tableWidget.setItem(row, 0, QTableWidgetItem(label))
             self.tableWidget.setItem(row, 1, QTableWidgetItem(value))
-
+def get_current_timestamp():
+        """Trả về thời gian hiện tại theo định dạng chuẩn ISO."""
+        return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 class MainWindowEx6(QMainWindow, Ui_MainWindow6):
     def __init__(self, user):
         super().__init__()
@@ -212,30 +216,79 @@ class MainWindowEx6(QMainWindow, Ui_MainWindow6):
 
         self.load_bookings()
 
-    def save_booking(self):
-        booking_data = {
-            "phone": self.user.phone_number,
-            "date": self.lineEditNgay.text().strip(),
-            "guest_count": self.lineEditSL.text().strip(),
-            "decoration": self.lineEdit_3.text().strip()
-        }
 
-        if not booking_data["date"] or not booking_data["guest_count"].isdigit():
+
+    def save_booking(self):
+        """Lưu đặt bàn vào file `datban.json` và đảm bảo dữ liệu không bị lỗi."""
+        date = self.lineEditNgay.text().strip()
+        guest_count = self.lineEditSL.text().strip()
+        decoration = self.lineEdit_3.text().strip()
+
+        if not date or not guest_count.isdigit():
             QMessageBox.warning(self, "Lỗi", "Vui lòng nhập đầy đủ thông tin đặt bàn hợp lệ.")
             return
 
+        guest_count = int(guest_count)
+
+        if guest_count <= 0:
+            QMessageBox.warning(self, "Lỗi", "Số khách phải lớn hơn 0.")
+            return
+
+        # Kiểm tra định dạng ngày
         try:
-            with open("datban.json", "r", encoding="utf-8") as file:
-                bookings = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
+            datetime.strptime(date, "%Y-%m-%d")  # Định dạng YYYY-MM-DD
+        except ValueError:
+            QMessageBox.warning(self, "Lỗi", "Ngày đặt bàn không đúng định dạng (YYYY-MM-DD).")
+            return
+
+        file_path = "datban.json"
+
+        # Đọc danh sách đặt bàn từ file nếu có
+        if not os.path.exists(file_path) or os.stat(file_path).st_size == 0:
             bookings = []
+        else:
+            try:
+                with open(file_path, "r", encoding="utf-8") as file:
+                    bookings = json.load(file)
+                    if not isinstance(bookings, list):  # Kiểm tra định dạng
+                        bookings = []
+            except json.JSONDecodeError:
+                bookings = []
+
+        # Tạo `reservation_id` duy nhất (dựa vào ID cuối cùng)
+        if bookings:
+            last_id = int(bookings[-1]["reservation_id"][3:])  # Lấy số từ "RES001"
+            new_reservation_id = f"RES{last_id + 1:03d}"
+        else:
+            new_reservation_id = "RES001"
+
+        # Thêm đặt bàn mới
+        booking_data = {
+            "reservation_id": new_reservation_id,
+            "phone": self.user.phone_number,
+            "date": date,
+            "guest_count": guest_count,
+            "decoration": decoration,
+            "status": "Pending",  # Trạng thái mặc định
+            "table_number": None,  # Chưa có số bàn
+            "deposit_amount": 0,  # Đặt cọc ban đầu là 0
+            "created_at": get_current_timestamp(),
+            "updated_at": get_current_timestamp()
+        }
 
         bookings.append(booking_data)
-        with open("datban.json", "w", encoding="utf-8") as file:
-            json.dump(bookings, file, indent=4, ensure_ascii=False)
 
-        QMessageBox.information(self, "Thành công", "Đặt bàn thành công!")
-        self.load_bookings()
+        # Ghi dữ liệu cập nhật vào file
+        try:
+            with open(file_path, "w", encoding="utf-8") as file:
+                json.dump(bookings, file, indent=4, ensure_ascii=False)
+            QMessageBox.information(self, "Thành công", "Đặt bàn thành công!")
+            print(f"Đặt bàn thành công: {booking_data}")  # Log đặt bàn thành công
+        except Exception as e:
+            QMessageBox.warning(self, "Lỗi", f"Lỗi khi lưu đặt bàn: {e}")
+            print(f"Lỗi khi lưu đặt bàn: {e}")  # Log lỗi
+
+        self.load_bookings()  # Cập nhật giao diện
 
     def load_bookings(self):
         try:
@@ -276,6 +329,7 @@ class MainWindowEx7(QMainWindow, Ui_MainWindow7):
         #self.pushButtonKH.clicked.connect(self.go_to_mainwindow8)  # Chuyển đến giao diện đặt bàn
         self.pushButtonDB.clicked.connect(self.go_to_mainwindow8)  # Chuyển đến giao diện khách hàng
         self.pushButton_4.clicked.connect(self.logout)  # Đăng xuất
+        self.pushButtonDH.clicked.connect(self.go_to_mainwindow9)
         self.pushButtonDH.clicked.connect(self.go_to_mainwindow9)
         self.pushButtonKH.clicked.connect(self.go_to_mainwindow10)
 

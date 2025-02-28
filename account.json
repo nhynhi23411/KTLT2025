@@ -30,7 +30,7 @@
         "customer_id": "C001",
         "address": "123 Street, City",
         "registration_date": "2024-01-01",
-        "money": 200.0
+        "money": 20200.0
     },
     "customer2": {
         "user_id": "customer2",
