@@ -97,5 +97,19 @@
         "total_price": 70000,
         "order_id": "O007",
         "status": "Chưa giao"
+    },
+    {
+        "phone": "0111111111",
+        "items": [
+            {
+                "id": "M001",
+                "name": "Cơm tấm",
+                "quantity": 2,
+                "price": 35000
+            }
+        ],
+        "total_price": 70000,
+        "order_id": "O008",
+        "status": "Chưa giao"
     }
 ]
