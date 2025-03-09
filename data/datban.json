@@ -1,0 +1,86 @@
+[
+    {
+        "reservation_id": "RES001",
+        "phone": "0111111111",
+        "date": "2024-06-15",
+        "guest_count": 4,
+        "decoration": "Hoa hồng",
+        "status": "Arrived",
+        "table_number": "3",
+        "deposit_amount": 500000,
+        "created_at": "2024-06-01T10:30:00Z",
+        "updated_at": "2024-06-01T10:30:00Z"
+    },
+    {
+        "reservation_id": "RES002",
+        "phone": "0122222222",
+        "date": "2024-06-16",
+        "guest_count": 2,
+        "decoration": "Bóng bay",
+        "status": "Confirmed",
+        "table_number": 5,
+        "deposit_amount": 200000,
+        "created_at": "2024-06-02T15:45:00Z",
+        "updated_at": "2024-06-03T09:00:00Z"
+    },
+    {
+        "reservation_id": "RES003",
+        "phone": "0133333333",
+        "date": "2024-06-20",
+        "guest_count": 6,
+        "decoration": "Nến thơm",
+        "status": "Cancelled",
+        "table_number": null,
+        "deposit_amount": 300000,
+        "created_at": "2024-06-05T08:20:00Z",
+        "updated_at": "2024-06-07T14:00:00Z"
+    },
+    {
+        "reservation_id": "RES004",
+        "phone": "0111111111",
+        "date": "2027-02-15",
+        "guest_count": 2,
+        "decoration": "Bánh kem",
+        "status": "Pending",
+        "table_number": null,
+        "deposit_amount": 0,
+        "created_at": "2025-06-01T12:00:00Z",
+        "updated_at": "2025-06-01T12:00:00Z"
+    },
+    {
+        "reservation_id": "RES005",
+        "phone": "0111111111",
+        "date": "2024-04-26",
+        "guest_count": 2,
+        "decoration": "Không",
+        "status": "Pending",
+        "table_number": null,
+        "deposit_amount": 0,
+        "created_at": "2024-04-01T08:00:00Z",
+        "updated_at": "2024-04-01T08:00:00Z"
+    },
+    {
+        "reservation_id": "RES006",
+        "phone": "0111111111",
+        "date": "2000-06-13",
+        "guest_count": 2,
+        "decoration": "2",
+        "status": "Pending",
+        "table_number": null,
+        "deposit_amount": 0,
+        "created_at": "2025-02-28T03:43:48Z",
+        "updated_at": "2025-02-28T03:43:48Z"
+    },
+    {
+        "reservation_id": "RES007",
+        "phone": "0111111111",
+        "date": "2024-05-12",
+        "guest_count": 2,
+        "decoration": "2",
+        "status": "Pending",
+        "table_number": null,
+        "deposit_amount": 0,
+        "created_at": "2025-02-28T06:18:18Z",
+        "updated_at": "2025-02-28T06:18:18Z"
+    }
+]

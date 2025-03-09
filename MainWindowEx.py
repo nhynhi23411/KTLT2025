@@ -9,6 +9,7 @@ from MainWindow6 import Ui_MainWindow6
 from MainWindow8 import Ui_MainWindow8
 from MainWindow9 import Ui_MainWindow9
 from MainWindow10 import Ui_MainWindow10
+from MainWindow11 import Ui_MainWindow11
 from handler1 import AccountHandler
 from PyQt6.QtWidgets import QTableWidgetItem
 from menu import menu_items
@@ -20,6 +21,7 @@ import os
 from datetime import datetime
 from account import accounts
 
+import hashlib
 
 class MainWindowEx1(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -574,9 +576,26 @@ class MainWindowEx10(QMainWindow, Ui_MainWindow10):
         # Kết nối các nút với chức năng
         self.pushButtonThem.clicked.connect(self.add_money)  # Nút thêm tiền
         self.pushButton_2.clicked.connect(self.delete_account)  # Nút xóa tài khoản
-
+        self.pushButton.clicked.connect(self.open_mainwindow11)  # Mở MainWindow11
         self.load_customers()  # Gọi hàm tải danh sách khách hàng
+        #self.pushButtonThem_2.clicked.connect(self.logout())
+        #self.pushButtonThem_3.clicked.connect(self.go_to_mainwindow7())
+    def go_to_mainwindow7(self):
+        """Quay về giao diện quản lý."""
+        self.main_window7 = MainWindowEx7(self.user)
+        self.main_window7.show()
+        self.close()
 
+    def logout(self):
+        """Đăng xuất về màn hình chính."""
+        QMessageBox.information(self, "Đăng xuất", "Bạn đã đăng xuất thành công.")
+        self.main_window1 = MainWindowEx1()
+        self.main_window1.show()
+        self.close()
+    def open_mainwindow11(self):
+        self.main_window11 = MainWindowEx11(self.user)
+        self.main_window11.show()
+        self.close()
     def load_customers(self):
         """Load danh sách khách hàng từ `account.json` vào `tableWidget`."""
         try:
@@ -677,6 +696,110 @@ class MainWindowEx10(QMainWindow, Ui_MainWindow10):
         with open("account.json", "w", encoding="utf-8") as file:
             json.dump(accounts, file, indent=4, ensure_ascii=False)
 
+class MainWindowEx11(QMainWindow, Ui_MainWindow11):
+    def __init__(self, user):
+        super().__init__()
+        self.setupUi(self)  # Thiết lập giao diện
+        self.user = user  # Lưu thông tin người dùng đang đăng nhập
+
+        # Kết nối các nút với hàm xử lý
+        self.pushButton.clicked.connect(self.save_customer_info)  # Nút "THÊM"
+        self.pushButton_2.clicked.connect(self.return_to_mainwindow10)  # Nút "TRỞ VỀ"
+
+    def hash_password(self, password):
+        """Mã hóa mật khẩu bằng SHA-256"""
+        return hashlib.sha256(password.encode()).hexdigest()
+
+    def save_customer_info(self):
+        """Lưu thông tin khách hàng vào cả accounts.json và account.py"""
+        first_name = self.lineEdit.text().strip()
+        last_name = self.lineEdit_2.text().strip()
+        address = self.lineEdit_3.text().strip()
+        email = self.lineEdit_4.text().strip()
+        phone = self.lineEdit_5.text().strip()
+
+        if not first_name or not last_name or not address or not email or not phone:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng điền đầy đủ thông tin!")
+            return
+
+        # Đọc dữ liệu từ file JSON
+        file_path = "account.json"
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as file:
+                accounts = json.load(file)
+        else:
+            accounts = {}
+
+        # Tạo user_id tự động
+        user_id = f"customer{len(accounts) + 1}"
+        customer_id = f"C{len(accounts) + 1:03}"  # Ví dụ: C001, C002, ...
+
+        # Kiểm tra trùng lặp email hoặc số điện thoại
+        for customer in accounts.values():
+            if customer["email"] == email or customer["phone"] == phone:
+                QMessageBox.warning(self, "Lỗi", "Email hoặc số điện thoại đã tồn tại!")
+                return
+
+        # Mã hóa mật khẩu mặc định
+        hashed_password = self.hash_password("123456")
+
+        # Tạo thông tin khách hàng
+        new_customer = {
+            "user_id": user_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "phone": phone,
+            "email": email,
+            "password": hashed_password,  # Mật khẩu đã mã hóa
+            "role": "customer",
+            "customer_id": customer_id,
+            "address": address,
+            "registration_date": "2025-03-05",  # Cập nhật ngày hiện tại
+            "money": 0.0  # Số dư mặc định
+        }
+
+        # Thêm khách hàng vào JSON
+        accounts[user_id] = new_customer
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump(accounts, file, indent=4, ensure_ascii=False)
+
+        # Cập nhật `account.py`
+        self.update_account_py(accounts)
+
+        QMessageBox.information(self, "Thành công", "Thông tin khách hàng đã được lưu!")
+
+        # Xóa dữ liệu trong các ô nhập
+        self.lineEdit.clear()
+        self.lineEdit_2.clear()
+        self.lineEdit_3.clear()
+        self.lineEdit_4.clear()
+        self.lineEdit_5.clear()
+
+    def update_account_py(self, accounts):
+        """Cập nhật file account.py sau khi thêm khách hàng mới"""
+        file_path = "account.py"
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write("import hashlib\n\n")
+            file.write("# Hàm mã hóa mật khẩu\n")
+            file.write("def hash_password(password):\n")
+            file.write("    return hashlib.sha256(password.encode()).hexdigest()\n\n")
+            file.write("accounts = {\n")
+
+            for user_id, info in accounts.items():
+                file.write(f'    "{user_id}": {{\n')
+                for key, value in info.items():
+                    if key == "password":
+                        file.write(f'        "{key}": hash_password("{value}"),\n')
+                    elif isinstance(value, str):
+                        file.write(f'        "{key}": "{value}",\n')
+                    else:
+                        file.write(f'        "{key}": {value},\n')
+                file.write("    },\n")
+            file.write("}\n")
+    def return_to_mainwindow10(self):
+        self.main_window10 = MainWindowEx10(self.user)
+        self.main_window10.show()
+        self.close()
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindowEx1()
