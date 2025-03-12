@@ -88,9 +88,9 @@
    <widget class="QPushButton" name="pushButtonXN1">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>50</x>
       <y>660</y>
-      <width>191</width>
+      <width>141</width>
       <height>41</height>
      </rect>
     </property>
@@ -163,6 +163,26 @@
     </property>
     <property name="text">
      <string>ĐĂNG XUẤT</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonHuy">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>660</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>HỦY</string>
     </property>
    </widget>
   </widget>

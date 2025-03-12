@@ -85,6 +85,7 @@
         "status": "Pending"
     },
     {
+        "order_id": "O007",
         "phone": "0111111111",
         "items": [
             {
@@ -95,10 +96,10 @@
             }
         ],
         "total_price": 70000,
-        "order_id": "O007",
-        "status": "Chưa giao"
+        "status": "Pending"
     },
     {
+        "order_id": "O008",
         "phone": "0111111111",
         "items": [
             {
@@ -109,7 +110,6 @@
             }
         ],
         "total_price": 70000,
-        "order_id": "O008",
-        "status": "Chưa giao"
+        "status": "Pending"
     }
 ]

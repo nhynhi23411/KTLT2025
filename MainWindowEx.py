@@ -369,7 +369,7 @@ class MainWindowEx8(QMainWindow, Ui_MainWindow8):
         self.pushButtonTC.clicked.connect(self.go_to_mainwindow7)  # Quay về quản lý
         self.pushButtonXN1.clicked.connect(self.confirm_reservation)  # Xác nhận đặt bàn
         self.pushButtonXN2.clicked.connect(self.confirm_guest_arrival)  # Xác nhận khách đến
-
+        self.pushButtonHuy.clicked.connect(self.huy)  # Xác nhận hủy
         self.load_reservations()  # Tải dữ liệu lên bảng
 
     def load_reservations(self):
@@ -461,7 +461,34 @@ class MainWindowEx8(QMainWindow, Ui_MainWindow8):
         self.main_window1 = MainWindowEx1()
         self.main_window1.show()
         self.close()
+    def huy(self):
+        """Admin xác nhận đặt bàn, cập nhật số bàn vào datban.json."""
+        res_id = self.lineEditID1.text().strip()
+        table_number = self.lineEditSoban.text().strip()
 
+        if not res_id:
+            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập ID đặt bàn và số bàn.")
+            return
+
+        try:
+            with open("datban.json", "r", encoding="utf-8") as file:
+                reservations = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            reservations = []
+
+        for res in reservations:
+            if res["reservation_id"] == res_id:
+                res["status"] = "Cancelled"
+                break
+        else:
+            QMessageBox.warning(self, "Lỗi", "Không tìm thấy ID đặt bàn!")
+            return
+
+        with open("datban.json", "w", encoding="utf-8") as file:
+            json.dump(reservations, file, indent=4, ensure_ascii=False)
+
+        QMessageBox.information(self, "Thành công", "Đã xác nhận đặt bàn bị hủy!")
+        self.load_reservations()  # Cập nhật giao diện
 class MainWindowEx9(QMainWindow, Ui_MainWindow9):
     def __init__(self, user):
         super().__init__()
